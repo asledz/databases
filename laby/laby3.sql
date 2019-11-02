@@ -107,3 +107,11 @@ SELECT max(CONNECT_BY_ROOT ename), SUM(sal)
 FROM emp
 CONNECT BY PRIOR empno=mgr
 GROUP BY (CONNECT_BY_ROOT ename);
+
+-- Zadanie 3
+/*
+czys w tabeli emp zawarta jest informacja o której godzinie zostali zatrudnieni wszyscy pracownicy?
+którzy pracownicy zostali zatrudnieni w 1982?
+jaki dzień tygodnia był 11 września 2001 roku?
+dla każdego pracownika wypisz kolumnę postaci "Józek (sprzedawca), WARSZAWA"
+*/
