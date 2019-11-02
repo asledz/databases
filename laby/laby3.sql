@@ -66,7 +66,6 @@ FROM emp JOIN (
 
 -- wypisz imiona wszystkich podwładnych KING'a (razem z nim) w taki sposób aby uzyskać strukturę drzewa:
 
-SET HEADING OFF
 SELECT
 	CONCAT(rpad(' ', poziom, ' '), ename) as Tree
 FROM
@@ -76,11 +75,35 @@ FROM
 	START WITH mgr IS NULL
 	CONNECT BY PRIOR empno = mgr
 );
-SET HEADING ON
+-- Inne rozwiązanie
 
+SELECT CONCAT(LPAD(' ',LEVEL-1),ename)
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno=mgr;
 
 -- wypisz wszystkich podwładnych KING'a bez niego
--- wypisz wszystkich podwładnych KING'a bez BLAKE'a i jego podwładnych
--- wypisz wszystkich pracowników którzy mają "pod sobą" SALESMANa
--- wypisz dla każdego pracownika sumę zarobków jego i jego podwładnych
+SELECT ename
+FROM emp 
+WHERE LEVEL>1 
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno=mgr;
 
+-- wypisz wszystkich podwładnych KING'a bez BLAKE'a i jego podwładnych
+SELECT ename
+FROM emp 
+WHERE LEVEL>1 
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno=mgr AND ename != 'BLAKE';
+
+-- wypisz wszystkich pracowników którzy mają "pod sobą" SALESMANa
+SELECT DISTINCT CONNECT_BY_ROOT ename
+FROM emp
+WHERE job = 'SALESMAN'
+CONNECT BY PRIOR empno = mgr;
+
+-- wypisz dla każdego pracownika sumę zarobków jego i jego podwładnych
+SELECT max(CONNECT_BY_ROOT ename), SUM(sal)
+FROM emp
+CONNECT BY PRIOR empno=mgr
+GROUP BY (CONNECT_BY_ROOT ename);
