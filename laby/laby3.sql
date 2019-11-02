@@ -23,11 +23,64 @@ SELECT deptno, job, (MAX(sal) - MIN(sal)) as rozpietosc FROM emp GROUP BY deptno
 -- policz średnie zarobki w departamencie w którym pracuje szef
 -- wszystkich szefów (czyli osoba która nie ma szefa)
 SELECT 
-
-SELECT emp.deptno FROM emp LEFT JOIN emp mgr ON emp.mgr = mgr.empno WHERE mgr.empno IS NULL;
-
+	deptno
+	, AVG(emp.sal) as averageSal
+FROM 
+	emp JOIN 
+	(SELECT emp.deptno as okr FROM emp LEFT JOIN emp mgr ON emp.mgr = mgr.empno WHERE mgr.empno IS NULL) okregi 
+ON okregi.okr = emp.deptno 
+GROUP BY emp.deptno;
+-- SELECT emp.deptno FROM emp LEFT JOIN emp mgr ON emp.mgr = mgr.empno WHERE mgr.empno IS NULL;
 
 -- znajdź numer pracownika który ma podwładnych w różnych działach
+SELECT
+	mgrno
+	, mgrname
+	, COUNT(subdep)
+FROM (
+	SELECT DISTINCT
+		mgr.empno as mgrno
+		, mgr.ename as mgrname
+		, sub.deptno as subdep
+	FROM emp mgr JOIN emp sub ON mgr.empno = sub.mgr
+) 
+GROUP BY mgrno, mgrname
+HAVING COUNT(subdep) > 1;
 
 -- wypisz imiona oraz pensje wszystkich pracowników którzy nie mają zmiennika 
 -- (osoby na tym samym stanowisku w tym samym departamencie) i posortuj ich według pensji malejąco
+
+SELECT 
+	ename
+	, sal
+FROM emp JOIN (
+	SELECT 
+		deptno
+		, job
+	FROM emp
+	GROUP BY deptno, job
+	HAVING COUNT(empno) = 1
+) a1 ON a1.deptno = emp.deptno AND a1.job = emp.job ORDER BY sal DESC;
+
+-- Zadanie 2.
+
+-- wypisz imiona wszystkich podwładnych KING'a (razem z nim) w taki sposób aby uzyskać strukturę drzewa:
+
+SET HEADING OFF
+SELECT
+	CONCAT(rpad(' ', poziom, ' '), ename) as Tree
+FROM
+(
+	SELECT ename, PRIOR ename AS mgr_ename, LEVEL AS poziom
+	FROM emp
+	START WITH mgr IS NULL
+	CONNECT BY PRIOR empno = mgr
+);
+SET HEADING ON
+
+
+-- wypisz wszystkich podwładnych KING'a bez niego
+-- wypisz wszystkich podwładnych KING'a bez BLAKE'a i jego podwładnych
+-- wypisz wszystkich pracowników którzy mają "pod sobą" SALESMANa
+-- wypisz dla każdego pracownika sumę zarobków jego i jego podwładnych
+
