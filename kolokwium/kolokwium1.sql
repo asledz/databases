@@ -27,7 +27,7 @@ FROM   (SELECT z.projekt,
 WHERE  iletrwa > lrg;  
 
 -- Zadanie 3.
--- Chyba źle!!!
+-- ŹLE PRZECZYTANA TREŚĆ
 SELECT z.nazwa,
        Max(Nvl(( CASE
                    WHEN z.osoby > zadanka.osoby THEN z.osoby
