@@ -1,7 +1,7 @@
 -- Anita Śledźs
+-- https://www.mimuw.edu.pl/~fmurlak/harmonogram/
 
 set linesize 100
-
 
 -- Zadanie 1.
 SELECT z.nazwa,
