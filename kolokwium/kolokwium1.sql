@@ -41,15 +41,22 @@ FROM   zadanie z
 GROUP  BY z.nazwa;  
 
 
-SELECT z.*, zal.co kolejny
-FROM
-zadanie z
-LEFT JOIN
-zalezy zal
-ON zal.od = z.nazwa;
+-- Zadanie 4
 
-
-SELECT CONCAT(LPAD(' ',LEVEL-1),ename)
-FROM emp
-START WITH mgr IS NULL
-CONNECT BY PRIOR empno=mgr;
+SELECT projekt,
+       Count(nazwa)
+FROM   (SELECT z.projekt,
+               z.nazwa,
+               z.procent,
+               Nvl(Min(zadanka.procent), 100) zalezne
+        FROM   zadanie z
+               left join zalezy zal
+                      ON z.nazwa = zal.co
+               left join zadanie zadanka
+                      ON zal.od = zadanka.nazwa
+        GROUP  BY z.projekt,
+                  z.nazwa,
+                  z.procent
+        HAVING Nvl(Min(zadanka.procent), 100) = 100)
+WHERE  procent < 100
+GROUP  BY projekt;  
